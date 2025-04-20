@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Calendar Styles */
+.react-calendar {
+  width: 100%;
+  max-width: 400px;
+  background-color: #2d2d2d !important;
+  border: none !important;
+  font-family: inherit;
+}
+
+.react-calendar button {
+  color: white !important;
+}
+
+.react-calendar__tile--active {
+  background: #b388ff !important;
+}
+
+.react-calendar__tile--now {
+  background: #3d3d3d !important;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #7c4dff !important;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: #3d3d3d !important;
+}
+
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  background: #7c4dff !important;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #ff8a80 !important;
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #666 !important;
+}
