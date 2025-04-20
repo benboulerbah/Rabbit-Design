@@ -1,11 +1,46 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { auth } from '../firebase';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from 'firebase/auth';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!email || !password || (!isLogin && (!confirmPassword || !fullName))) {
+      return setError("Please fill in all required fields.");
+    }
+
+    if (!isLogin && password !== confirmPassword) {
+      return setError("Passwords do not match.");
+    }
+
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("Login successful!");
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert("Account created!");
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 text-white">
@@ -27,7 +62,7 @@ export default function Auth() {
             </p>
           </div>
 
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <div>
                 <label htmlFor="name" className="block text-sm font-medium mb-2">
@@ -36,6 +71,8 @@ export default function Auth() {
                 <input
                   type="text"
                   id="name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   className="w-full px-4 py-2 rounded-md bg-primary-light focus:outline-none focus:ring-2 focus:ring-accent"
                   placeholder="John Doe"
                 />
@@ -49,6 +86,8 @@ export default function Auth() {
               <input
                 type="email"
                 id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2 rounded-md bg-primary-light focus:outline-none focus:ring-2 focus:ring-accent"
                 placeholder="john@example.com"
               />
@@ -62,6 +101,8 @@ export default function Auth() {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-2 rounded-md bg-primary-light focus:outline-none focus:ring-2 focus:ring-accent"
                   placeholder="••••••••"
                 />
@@ -84,6 +125,8 @@ export default function Auth() {
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full px-4 py-2 rounded-md bg-primary-light focus:outline-none focus:ring-2 focus:ring-accent"
                     placeholder="••••••••"
                   />
@@ -95,6 +138,12 @@ export default function Auth() {
                     {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="text-red-500 text-sm text-center">
+                {error}
               </div>
             )}
 
