@@ -1,10 +1,37 @@
-import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function Register() {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!fullName || !email || !password || !confirmPassword) {
+      return setError("Please fill in all fields.");
+    }
+
+    if (password !== confirmPassword) {
+      return setError("Passwords do not match.");
+    }
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("Account created successfully!");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 text-white">
@@ -16,18 +43,20 @@ export default function Register() {
           className="bg-primary p-8 rounded-lg shadow-xl"
         >
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">Create an Account</h1>
-            <p className="text-gray-300">Join us to get started with your design journey</p>
+            <h1 className="text-3xl font-bold mb-2">Create Your Account</h1>
+            <p className="text-gray-300">Join us and start your design journey</p>
           </div>
 
-          <form className="space-y-6">
+          <form onSubmit={handleRegister} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-2">
+              <label htmlFor="fullName" className="block text-sm font-medium mb-2">
                 Full Name
               </label>
               <input
                 type="text"
-                id="name"
+                id="fullName"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 className="w-full px-4 py-2 rounded-md bg-primary-light focus:outline-none focus:ring-2 focus:ring-accent"
                 placeholder="John Doe"
               />
@@ -40,6 +69,8 @@ export default function Register() {
               <input
                 type="email"
                 id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2 rounded-md bg-primary-light focus:outline-none focus:ring-2 focus:ring-accent"
                 placeholder="john@example.com"
               />
@@ -53,6 +84,8 @@ export default function Register() {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-2 rounded-md bg-primary-light focus:outline-none focus:ring-2 focus:ring-accent"
                   placeholder="••••••••"
                 />
@@ -74,6 +107,8 @@ export default function Register() {
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full px-4 py-2 rounded-md bg-primary-light focus:outline-none focus:ring-2 focus:ring-accent"
                   placeholder="••••••••"
                 />
@@ -87,17 +122,19 @@ export default function Register() {
               </div>
             </div>
 
+            {error && (
+              <div className="text-red-500 text-sm text-center">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
               className="w-full bg-accent hover:bg-accent-dark py-3 rounded-md transition-colors"
             >
-              Create Account
+              Register
             </button>
           </form>
-
-          <p className="text-sm text-gray-400 text-center mt-6">
-            Already have an account? <a href="#" className="text-accent hover:text-accent-light">Sign in</a>
-          </p>
         </motion.div>
       </div>
     </div>
